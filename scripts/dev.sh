@@ -1,22 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+printf "========================================\n"
+printf "  Iniciando Ambiente de Desenvolvimento\n"
+printf "========================================\n"
 
-echo "========================================"
-echo "  Iniciando Ambiente de Desenvolvimento"
-echo "========================================"
-
-# Iniciar os serviços Docker em segundo plano
-echo "\n>>> Iniciando servicos Docker em segundo plano..."
+printf "\n>>> Iniciando servicos Docker em segundo plano...\n"
 docker-compose -f infra/docker-compose.yml up -d
 
-# Iniciar todas as aplicações em modo de desenvolvimento usando Turbo
-echo "\n>>> Iniciando aplicacoes em modo de desenvolvimento..."
-pnpm dev
+printf "\n>>> Iniciando aplicacoes em modo de desenvolvimento...\n"
 
-echo "\n========================================"
-echo "  Ambiente de Desenvolvimento Iniciado"
-echo "========================================"
+# imprime o banner ANTES de entregar o terminal aos processos
+printf "\n========================================\n"
+printf "  Ambiente de Desenvolvimento Iniciado\n"
+printf "========================================\n"
+printf "Aperte Ctrl+C para encerrar. Logs a seguir...\n\n"
 
-
+# substitui o shell pelo processo de dev (vite/nodemon/turbo)
+exec pnpm dev

@@ -8,6 +8,8 @@ import reunioesRoutes from './routes/reunioes';
 import streamRoutes from './routes/stream';
 import devicesRoutes from './routes/devices';
 import exportRoutes from './routes/export';
+import statsRoutes from "./routes/stats";
+
 
 dotenv.config();
 
@@ -29,6 +31,7 @@ app.use('/api/reunioes', reunioesRoutes);
 app.use('/api/stream', streamRoutes);
 app.use('/api/devices', devicesRoutes);
 app.use('/api/export', exportRoutes);
+app.use("/api/stats", statsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
