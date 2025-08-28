@@ -1,101 +1,127 @@
-import { RoomServiceClient, AccessToken, Room, RoomCreateOptions, EgressClient, EncodedFileType, SegmentedFileProtocol, SegmentedFilePreset, DirectFileOutput, DirectFileOutputEncodingOptions } from 'livekit-server-sdk';
-import { TrackSource } from 'livekit-client';
+// apps/media-gateway/src/services/livekit.ts
+import {
+    RoomServiceClient,
+    AccessToken,
+    type CreateOptions,
+    EgressClient,
+    EncodedFileType,
+    EncodingOptionsPreset,
+    EncodedFileOutput,
+} from 'livekit-server-sdk';
+import { TrackSource } from '@livekit/protocol';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const livekitHost = process.env.LIVEKIT_WS_URL || 'ws://localhost:7880';
+// Use HTTP/HTTPS para o server SDK (ws:// é para o client)
+const livekitHost = process.env.LIVEKIT_HOST || 'http://localhost:7880';
 const livekitApiKey = process.env.LIVEKIT_API_KEY || 'devkey';
 const livekitApiSecret = process.env.LIVEKIT_API_SECRET || 'secret';
 
-export const roomService = new RoomServiceClient(
-  livekitHost,
-  livekitApiKey,
-  livekitApiSecret
-);
-
+export const roomService = new RoomServiceClient(livekitHost, livekitApiKey, livekitApiSecret);
 export const egressClient = new EgressClient(livekitHost, livekitApiKey, livekitApiSecret);
 
 class LiveKitService {
-  async createRoom(roomName: string, options?: RoomCreateOptions): Promise<Room> {
-    try {
-      const room = await roomService.createRoom({
-        name: roomName,
-        emptyTimeout: 60 * 10, // 10 minutes
-        maxParticipants: 20,
-        ...options,
-      });
-      console.log(`Room created: ${room.name}`);
-      return room;
-    } catch (error) {
-      console.error(`Error creating room ${roomName}:`, error);
-      throw error;
+    async createRoom(roomName: string, options?: Partial<CreateOptions>) {
+        const opts: CreateOptions = {
+            name: roomName,
+            emptyTimeout: 60 * 10,
+            maxParticipants: 20,
+            ...options,
+        };
+
+        try {
+            const room = await roomService.createRoom(opts);
+            console.log(`Room created: ${room.name}`);
+            return room;
+        } catch (error: any) {
+            // Se já existe, ignore; caso contrário, propague
+            if (!/already exists/i.test(error?.message || '')) {
+                console.error(`Error creating room ${roomName}:`, error);
+                throw error;
+            }
+            const rooms = await roomService.listRooms();
+            return rooms.find((r) => r.name === roomName);
+        }
     }
-  }
 
-  async deleteRoom(roomName: string): Promise<void> {
-    try {
-      await roomService.deleteRoom(roomName);
-      console.log(`Room deleted: ${roomName}`);
-    } catch (error) {
-      console.error(`Error deleting room ${roomName}:`, error);
-      throw error;
+    async deleteRoom(roomName: string): Promise<void> {
+        await roomService.deleteRoom(roomName);
+        console.log(`Room deleted: ${roomName}`);
     }
-  }
 
-  async listRooms(): Promise<Room[]> {
-    try {
-      const rooms = await roomService.listRooms();
-      return rooms;
-    } catch (error) {
-      console.error('Error listing rooms:', error);
-      throw error;
+    async listRooms() {
+        return roomService.listRooms();
     }
-  }
 
-  async generateToken(roomName: string, participantIdentity: string, participantName: string, canPublish: boolean, canSubscribe: boolean, canPublishData: boolean, canPublishSources?: TrackSource[]): Promise<string> {
-    const at = new AccessToken(livekitApiKey, livekitApiSecret, {
-      identity: participantIdentity,
-      name: participantName,
-    });
-    at.addGrant({
-      roomJoin: true,
-      room: roomName,
-      canPublish,
-      canSubscribe,
-      canPublishData,
-      canPublishSources,
-    });
+    /**
+     * Gera um token de acesso para um participante.
+     * canPublishSources usa enum TrackSource (do @livekit/protocol).
+     */
+    async generateToken(params: {
+        roomName: string;
+        participantIdentity: string;
+        participantName?: string;
+        canPublish?: boolean;
+        canSubscribe?: boolean;
+        canPublishData?: boolean;
+        canPublishSources?: TrackSource[];
+    }): Promise<string> {
+        const {
+            roomName,
+            participantIdentity,
+            participantName,
+            canPublish = true,
+            canSubscribe = true,
+            canPublishData = true,
+            canPublishSources,
+        } = params;
 
-    return at.toJwt();
-  }
+        const at = new AccessToken(livekitApiKey, livekitApiSecret, {
+            identity: participantIdentity,
+            name: participantName,
+        });
 
-  async startRoomCompositeEgress(roomName: string, filename: string): Promise<string> {
-    const output = new DirectFileOutput({
-      filepath: `${process.env.RECORDING_OUTPUT_PATH || './recordings'}/${filename}.mp4`,
-      outputFileType: EncodedFileType.MP4,
-    });
+        at.addGrant({
+            roomJoin: true,
+            room: roomName,
+            canPublish,
+            canSubscribe,
+            canPublishData,
+            canPublishSources, // ← agora é TrackSource[]
+        });
 
-    const encodingOptions = new DirectFileOutputEncodingOptions({
-      audioBitrate: 128,
-      videoBitrate: 2000,
-      width: 1280,
-      height: 720,
-      depth: 24,
-      framerate: 30,
-    });
+        return at.toJwt();
+    }
 
-    const info = await egressClient.startRoomCompositeEgress(roomName, output, encodingOptions);
-    console.log(`Started room composite egress for room ${roomName}: ${info.egressId}`);
-    return info.egressId;
-  }
+    /**
+     * Inicia egress composto (MP4) com preset H264_1080P_30.
+     * O caminho precisa ser acessível pelo processo de egress (container).
+     */
+    async startRoomCompositeEgress(roomName: string, filename: string): Promise<string> {
+        const outputPath = process.env.RECORDING_OUTPUT_PATH || './recordings';
 
-  async stopEgress(egressId: string): Promise<void> {
-    await egressClient.stopEgress(egressId);
-    console.log(`Stopped egress: ${egressId}`);
-  }
+        // EncodedFileOutput é classe: instancie com "new"
+        const output = new EncodedFileOutput({
+            fileType: EncodedFileType.MP4,
+            filepath: `${outputPath}/${filename}.mp4`,
+        });
+
+        const info = await egressClient.startRoomCompositeEgress(
+            roomName,
+            output,
+            "grid",
+            EncodingOptionsPreset.H264_1080P_30,
+        );
+
+        console.log(`Started room composite egress for room ${roomName}: ${info.egressId}`);
+        return info.egressId;
+    }
+
+    async stopEgress(egressId: string): Promise<void> {
+        await egressClient.stopEgress(egressId);
+        console.log(`Stopped egress: ${egressId}`);
+    }
 }
 
 export const liveKitService = new LiveKitService();
-
-

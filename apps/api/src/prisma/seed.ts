@@ -92,18 +92,22 @@ async function main() {
   console.log('Dispositivo de exemplo criado:', exampleDevice.deviceId);
 
   // Criar uma reunião de exemplo
-  const exampleReuniao = await prisma.reuniao.upsert({
-    where: { titulo: 'Reunião do Conselho de Tecnologia - Q3 2025' },
-    update: {},
-    create: {
-      titulo: 'Reunião do Conselho de Tecnologia - Q3 2025',
-      descricao: 'Discussão sobre as novas tecnologias e projetos para o próximo trimestre.',
-      data: new Date('2025-09-15T10:00:00Z'),
-      local: 'Sala de Reuniões Principal',
-      createdBy: adminUser.id,
-      status: 'AGENDADA',
-    },
-  });
+    const titulo = 'Reunião do Conselho de Tecnologia - Q3 2025';
+    let exampleReuniao = await prisma.reuniao.findFirst({ where: { titulo } });
+
+    if (!exampleReuniao) {
+        exampleReuniao = await prisma.reuniao.create({
+            data: {
+                titulo,
+                descricao:
+                    'Discussão sobre as novas tecnologias e projetos para o próximo trimestre.',
+                data: new Date('2025-09-15T10:00:00Z'),
+                local: 'Sala de Reuniões Principal',
+                createdBy: adminUser.id,
+                status: 'AGENDADA',
+            },
+        });
+    }
 
   console.log('Reunião de exemplo criada:', exampleReuniao.titulo);
 
