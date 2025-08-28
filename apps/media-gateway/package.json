@@ -4,7 +4,7 @@
   "description": "Serviço de Media Gateway para o Portal dos Conselheiros",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "dev": "nodemon --watch src --ext ts,json --exec \"tsx src/server.ts\"",
     "start": "node dist/server.js",
     "build": "tsc",
     "lint": "eslint src --ext .ts",
@@ -18,10 +18,10 @@
   "license": "ISC",
   "dependencies": {
     "@livekit/protocol": "^1.12.1",
-    "livekit-server-sdk": "^2.13.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "livekit-server-sdk": "^2.13.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.2",
     "ts-jest": "^29.2.0",
+    "tsx": "^4.20.5",
     "typescript": "^5.5.3"
   }
 }
-
