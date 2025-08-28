@@ -1,0 +1,38 @@
+{
+  "name": "portal-conselheiros-monorepo",
+  "version": "1.0.0",
+  "description": "Monorepo para o Portal dos Conselheiros do Senac",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:integration": "turbo run test:integration",
+    "test:e2e": "turbo run test:e2e",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean"
+  },
+  "keywords": [
+    "monorepo",
+    "senac",
+    "portal",
+    "conselheiros",
+    "react",
+    "react-native",
+    "node",
+    "express",
+    "prisma",
+    "livekit"
+  ],
+  "author": "Manus Team",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "turbo": "^2.0.4",
+    "pnpm": "^9.5.0"
+  },
+  "packageManager": "pnpm@9.5.0"
+}
+

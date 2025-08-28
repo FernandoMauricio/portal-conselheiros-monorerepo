@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  minio:
+    image: minio/minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001" # MinIO Console
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  livekit:
+    image: livekit/livekit-server:v1.5.0
+    restart: always
+    command: 
+      - --config
+      - /etc/livekit/livekit.yaml
+    volumes:
+      - ./livekit.yaml:/etc/livekit/livekit.yaml
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+    environment:
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+      LIVEKIT_IP: ${LIVEKIT_IP}
+      LIVEKIT_PORT: 7880
+      LIVEKIT_BIND_ADDRESS: 0.0.0.0
+      LIVEKIT_ADVERTISED_IP: ${LIVEKIT_ADVERTISED_IP}
+      LIVEKIT_ADVERTISED_PORT: 7880
+      LIVEKIT_RECORDING_DIR: /tmp/recordings
+
+  coturn:
+    image: coturn/coturn
+    restart: always
+    network_mode: host # Required for STUN/TURN
+    command: 
+      - -n
+      - --min-port=49152
+      - --max-port=65535
+      - --realm=livekit.io
+      - --fingerprint
+      - --no-multicast-hops
+      - --no-cli
+      - --mobility
+      - --primary-dn=livekit.io
+      - --lt-cred-mech
+      - --max-bps=0
+      - --stale-nonce
+      - --no-loopback-peers
+      - --no-sslv3
+      - --no-tlsv1
+      - --no-tlsv1_1
+      - --log-file=stdout
+      - --denied-peer-ip=10.0.0.0-10.255.255.255
+      - --denied-peer-ip=172.16.0.0-172.31.255.255
+      - --denied-peer-ip=192.168.0.0-192.168.255.255
+      - --denied-peer-ip=127.0.0.1
+      - --external-ip=${COTURN_EXTERNAL_IP}
+      - --listening-ip=${COTURN_LISTENING_IP}
+      - --listening-port=3478
+      - --tls-listening-port=5349
+      - --aux-listening-port=5349
+      - --aux-listening-port=3478
+      - --no-auth-batch
+      - --syslog
+      - --user=livekit:livekit
+      - --cli-password=livekit
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  minio_data:
+  redis_data:
+
+

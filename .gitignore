@@ -1,0 +1,155 @@
+# =========================
+# Monorepo (Turbo + pnpm)
+# =========================
+
+# --- Node / pnpm (lockfile deve ser COMMITADO) ---
+node_modules/
+.pnpm-store/
+# pnpm-lock.yaml  << NÃO ignore. Versione o lockfile.
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# Turbo
+# =========================
+.turbo/
+turbo.json-local.json
+
+# =========================
+# Variáveis de ambiente
+# =========================
+# (global e por app)
+.env
+.env.*
+!.env.example
+
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+
+infra/.env
+infra/.env.*
+!infra/.env.example
+
+# =========================
+# Saídas de build / cache
+# =========================
+# genéricos
+dist/
+build/
+out/
+coverage/
+.cache/
+.vite/
+.tmp/
+
+# por pasta de apps
+apps/*/dist/
+apps/*/build/
+apps/*/out/
+apps/*/coverage/
+
+# =========================
+# Web (Next.js / Vite / etc.)
+# =========================
+.next/
+.vercel/
+.svelte-kit/
+.nuxt/
+storybook-static/
+.eslintcache
+
+# =========================
+# API (Prisma / bancos locais)
+# =========================
+# bancos locais de dev
+**/*.sqlite
+**/*.db
+**/*.db-journal
+prisma/dev.db
+prisma/dev.db-journal
+
+# Migrations geralmente DEVEM ser versionadas:
+# prisma/migrations/  << mantenha versionado (não ignore)
+
+# =========================
+# Mobile (Expo / React Native)
+# =========================
+# Expo
+.expo/
+.expo-shared/
+.expo/*
+.expo-shared/*
+
+# Android
+android/.cxx/
+android/.gradle/
+android/local.properties
+android/app/build/
+android/build/
+*.apk
+*.aab
+*.keystore
+*.keystores
+
+# iOS
+ios/build/
+ios/DerivedData/
+ios/Pods/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdatad
+*.xcodeproj/project.xcworkspace/
+# Fastlane outputs (se usar)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Metro / Watchman
+.watchmanconfig
+
+# =========================
+# Media Gateway (LiveKit / gravações)
+# =========================
+# se gerar mídia/temporários locais:
+apps/media-gateway/recordings/
+apps/media-gateway/tmp/
+apps/media-gateway/.cache/
+
+# =========================
+# Docker / Infra
+# =========================
+infra/data/
+infra/tmp/
+infra/volumes/
+infra/**/data/
+infra/**/tmp/
+# compose overrides locais
+infra/docker-compose.override.yml
+
+# =========================
+# Sistemas Operacionais
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDEs / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Outros que às vezes aparecem
+# =========================
+*.orig
+*.rej
+*.patch

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tsbuildinfo",
+    "skipLibCheck": true,
+  },
+  "include": ["vite.config.ts"]
+}
+

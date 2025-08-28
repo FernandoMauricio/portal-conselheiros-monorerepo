@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f0f2f5;
+}
+
+.senac-bg-blue {
+  background-color: #003366;
+}
+
+.senac-text-orange {
+  color: #ff6600;
+}
+
+.senac-btn {
+  @apply bg-blue-800 text-white font-bold py-2 px-4 rounded;
+}
+
+.senac-btn:hover {
+  @apply bg-blue-700;
+}
+
