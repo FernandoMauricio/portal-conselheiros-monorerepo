@@ -21,7 +21,10 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.senac.portalconselheirosmobile",
+<<<<<<< HEAD
       "minSdkVersion": 26,
+=======
+>>>>>>> 2307aa3a9e8781b0e5e2dc3d84183e0ad06ff7b3
       "permissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"]
     },
     "web": {
