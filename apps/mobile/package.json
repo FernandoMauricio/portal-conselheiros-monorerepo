@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
-    "dev": "expo start -c",
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "dev": "expo start -c --port 8082 --lan",
+    "start": "expo start --port 8082 --lan",
+    "android": "expo start --android --port 8082 --lan",
+    "ios": "expo start --ios --port 8082 --lan",
+    "web": "expo start --web --port 8082",
     "test": "jest --watchAll",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
+    "@livekit/react-native": "^1.2.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.7.2",
@@ -26,17 +27,16 @@
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.17",
     "expo-status-bar": "~1.12.1",
-    "lottie-react-native": "^6.7.0",
+    "lottie-react-native": "^6.7.2",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.74.2",
-    "react-native-safe-area-context": "4.10.1",
+    "react-native": "0.74.7",
+    "react-native-safe-area-context": "4.10.9",
     "react-native-screens": "3.31.1",
-    "react-native-web": "~0.19.10",
     "react-native-vision-camera": "^4.0.0",
-    "vision-camera-face-detector": "^0.1.8",
-    "@livekit/react-native": "^1.2.0"
+    "react-native-web": "~0.19.10",
+    "vision-camera-face-detector": "^0.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -52,7 +52,7 @@
     "prettier": "^3.3.2",
     "react-test-renderer": "18.2.0",
     "tailwindcss": "^3.3.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.3.3"
   },
   "private": true
 }
