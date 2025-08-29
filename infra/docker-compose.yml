@@ -34,54 +34,30 @@ services:
     volumes:
       - ./livekit.yaml:/etc/livekit/livekit.yaml
     ports:
-      - "7880:7880"
-      - "7881:7881"
+      - "7880:7880/tcp"
+      - "7881:7881/tcp"
+      - "7882:7882/udp"
     environment:
       LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
       LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
-      LIVEKIT_IP: ${LIVEKIT_IP}
-      LIVEKIT_PORT: 7880
-      LIVEKIT_BIND_ADDRESS: 0.0.0.0
-      LIVEKIT_ADVERTISED_IP: ${LIVEKIT_ADVERTISED_IP}
-      LIVEKIT_ADVERTISED_PORT: 7880
-      LIVEKIT_RECORDING_DIR: /tmp/recordings
 
   coturn:
-    image: coturn/coturn
+    image: coturn/coturn:4.6.2
     restart: always
-    network_mode: host # Required for STUN/TURN
-    command: 
+    command:
       - -n
-      - --min-port=49152
-      - --max-port=65535
-      - --realm=livekit.io
-      - --fingerprint
-      - --no-multicast-hops
-      - --no-cli
-      - --mobility
-      - --primary-dn=livekit.io
-      - --lt-cred-mech
-      - --max-bps=0
-      - --stale-nonce
-      - --no-loopback-peers
-      - --no-sslv3
-      - --no-tlsv1
-      - --no-tlsv1_1
       - --log-file=stdout
-      - --denied-peer-ip=10.0.0.0-10.255.255.255
-      - --denied-peer-ip=172.16.0.0-172.31.255.255
-      - --denied-peer-ip=192.168.0.0-192.168.255.255
-      - --denied-peer-ip=127.0.0.1
-      - --external-ip=${COTURN_EXTERNAL_IP}
-      - --listening-ip=${COTURN_LISTENING_IP}
-      - --listening-port=3478
-      - --tls-listening-port=5349
-      - --aux-listening-port=5349
-      - --aux-listening-port=3478
-      - --no-auth-batch
-      - --syslog
+      - --listening-ip=0.0.0.0
+      - --external-ip=${TURN_EXTERNAL_IP}
+      - --realm=livekit
+      - --lt-cred-mech
       - --user=livekit:livekit
-      - --cli-password=livekit
+      - --min-port=49160
+      - --max-port=49200
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+      - "49160-49200:49160-49200/udp"
 
   redis:
     image: redis:7-alpine

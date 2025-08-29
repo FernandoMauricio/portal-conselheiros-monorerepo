@@ -1,37 +1,16 @@
+# infra/livekit.yaml
 port: 7880
+bind_addresses:
+  - 0.0.0.0
+
 rtc:
   udp_port: 7882
   tcp_port: 7881
-  # ICE servers (STUN/TURN)
-  # configure this to your coturn server or use a public one
-  # urls: 
-  #   - stun:stun.l.google.com:19302
-  #   - turn:your-turn-server.com:3478
-  # username: your-turn-username
-  # credential: your-turn-password
 
-# API keys
-api_keys:
-  - key: "${LIVEKIT_API_KEY}"
-    secret: "${LIVEKIT_API_SECRET}"
+# deixa o TURN desligado no dev por enquanto
+turn:
+  enabled: false
 
-# Redis for clustering (optional)
-# redis:
-#   address: "redis:6379"
-
-# Webhook callbacks
-# webhooks:
-#   - url: "http://localhost:3002/api/webhooks"
-
-# Egress (recording) configuration
-# egress:
-#   file_path: "/tmp/recordings"
-#${room_name}.mp4"
-#   s3:
-#     access_key: "${MINIO_ROOT_USER}"
-#     secret_key: "${MINIO_ROOT_PASSWORD}"
-#     endpoint: "http://minio:9000"
-#     bucket: "portal-conselheiros"
-#     region: "us-east-1"
-
-
+# chaves no formato novo (mapa key: secret)
+keys:
+  portal-dev: 2EkoKjZFBioz%WGs5pa@9nZq&rkx#PXFcZHfLx@#e6RdsJ1T

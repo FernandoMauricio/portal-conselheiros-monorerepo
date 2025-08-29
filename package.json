@@ -27,7 +27,7 @@
     "prisma",
     "livekit"
   ],
-  "author": "Manus Team",
+  "author": "Fernando Mauricio",
   "license": "UNLICENSED",
   "devDependencies": {
     "@types/node": "^20.19.11",
