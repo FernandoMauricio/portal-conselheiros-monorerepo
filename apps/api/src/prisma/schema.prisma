@@ -8,113 +8,100 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  password  String
-  role      UserRole @default(VIEWER)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  reunioesCriadas Reuniao[] @relation("ReuniaoCreatedBy")
+  id              String    @id @default(uuid()) @db.Uuid
+  email           String    @unique
+  password        String
+  role            UserRole  @default(VIEWER)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
   devices         Device[]
+  reunioesCriadas Reuniao[] @relation("ReuniaoCreatedBy")
 
   @@map("users")
 }
 
 model Conselheiro {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String     @id @default(uuid()) @db.Uuid
   nome        String
-  email       String?  @unique
+  email       String?    @unique
   cargo       String?
   instituicao String?
-  fotoRefUrl  String?  @map("foto_ref_url")
-  ativo       Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  presencas Presenca[]
+  fotoRefUrl  String?    @map("foto_ref_url")
+  ativo       Boolean    @default(true)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  presencas   Presenca[]
 
   @@map("conselheiros")
 }
 
 model Reuniao {
-  id           String         @id @default(uuid()) @db.Uuid
-  titulo       String
-  descricao    String?
-  data         DateTime
-  local        String?
-  status       ReuniaoStatus  @default(AGENDADA)
-  streamRoomId String?        @map("stream_room_id")
-  recordingUrl String?        @map("recording_url")
-  createdBy    String?        @map("created_by") @db.Uuid
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  criador        User?           @relation("ReuniaoCreatedBy", fields: [createdBy], references: [id])
-  presencas      Presenca[]
-  streamSession  StreamSession?
+  id            String         @id @default(uuid()) @db.Uuid
+  titulo        String
+  descricao     String?
+  data          DateTime
+  local         String?
+  status        ReuniaoStatus  @default(AGENDADA)
+  streamRoomId  String?        @map("stream_room_id")
+  recordingUrl  String?        @map("recording_url")
+  createdBy     String?        @map("created_by") @db.Uuid
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  presencas     Presenca[]
+  criador       User?          @relation("ReuniaoCreatedBy", fields: [createdBy], references: [id])
+  streamSession StreamSession?
 
   @@map("reunioes")
 }
 
 model Presenca {
-  id             String    @id @default(uuid()) @db.Uuid
-  reuniaoId      String    @map("reuniao_id") @db.Uuid
-  conselheiroId  String    @map("conselheiro_id") @db.Uuid
+  id             String      @id @default(uuid()) @db.Uuid
+  reuniaoId      String      @map("reuniao_id") @db.Uuid
+  conselheiroId  String      @map("conselheiro_id") @db.Uuid
   presente       Boolean
-  horarioChegada DateTime? @map("horario_chegada")
-  metodoRegistro String?   @map("metodo_registro")
-  confidence     Decimal?  @db.Decimal(3, 2)
-  deviceId       String?   @map("device_id")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  reuniao     Reuniao     @relation(fields: [reuniaoId], references: [id], onDelete: Cascade)
-  conselheiro Conselheiro @relation(fields: [conselheiroId], references: [id], onDelete: Cascade)
+  horarioChegada DateTime?   @map("horario_chegada")
+  metodoRegistro String?     @map("metodo_registro")
+  confidence     Decimal?    @db.Decimal(3, 2)
+  deviceId       String?     @map("device_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  conselheiro    Conselheiro @relation(fields: [conselheiroId], references: [id], onDelete: Cascade)
+  reuniao        Reuniao     @relation(fields: [reuniaoId], references: [id], onDelete: Cascade)
 
   @@unique([reuniaoId, conselheiroId])
   @@map("presencas")
 }
 
 model Device {
-  id            String    @id @default(uuid()) @db.Uuid
-  deviceId      String    @unique @map("device_id")
-  modelo        String?
-  autorizado    Boolean   @default(false)
-  ownerUserId   String?   @map("owner_user_id") @db.Uuid
-  ultimoAcesso  DateTime? @map("ultimo_acesso")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  owner User? @relation(fields: [ownerUserId], references: [id])
+  id           String    @id @default(uuid()) @db.Uuid
+  deviceId     String    @unique @map("device_id")
+  modelo       String?
+  autorizado   Boolean   @default(false)
+  ownerUserId  String?   @map("owner_user_id") @db.Uuid
+  ultimoAcesso DateTime? @map("ultimo_acesso")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  owner        User?     @relation(fields: [ownerUserId], references: [id])
 
   @@map("devices")
 }
 
 model StreamSession {
-  id              String       @id @default(uuid()) @db.Uuid
-  reuniaoId       String       @unique @map("reuniao_id") @db.Uuid
-  roomName        String       @map("room_name")
-  status          StreamStatus @default(CREATED)
-  startedAt       DateTime?    @map("started_at")
-  endedAt         DateTime?    @map("ended_at")
-  participantCount Int         @default(0) @map("participant_count")
-  recordingId     String?      @map("recording_id")
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
-
-  // Relacionamentos
-  reuniao Reuniao @relation(fields: [reuniaoId], references: [id], onDelete: Cascade)
+  id               String       @id @default(uuid()) @db.Uuid
+  reuniaoId        String       @unique @map("reuniao_id") @db.Uuid
+  roomName         String       @map("room_name")
+  status           StreamStatus @default(CREATED)
+  startedAt        DateTime?    @map("started_at")
+  endedAt          DateTime?    @map("ended_at")
+  participantCount Int          @default(0) @map("participant_count")
+  recordingId      String?      @map("recording_id")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  reuniao          Reuniao      @relation(fields: [reuniaoId], references: [id], onDelete: Cascade)
 
   @@map("stream_sessions")
 }
 
-// Enums
 enum UserRole {
   ADMIN
   MODERATOR
@@ -135,4 +122,3 @@ enum StreamStatus {
   ENDED
   ERROR
 }
-
