@@ -153,3 +153,20 @@ Thumbs.db
 *.orig
 *.rej
 *.patch
+
+# Firebase (se usar no futuro)
+apps/*/android/app/google-services.json
+apps/*/ios/GoogleService-Info.plist
+
+# Expo/EAS
+apps/*/.eas/build.json
+apps/*/.eas/credentials.json
+apps/*/.eas/local.json
+apps/*/.expo/*
+apps/*/.expo-shared/*
+
+# Android/iOS extras
+apps/*/android/.idea/
+apps/*/ios/*.xcworkspace
+apps/*/ios/*.xcuserdata/
+

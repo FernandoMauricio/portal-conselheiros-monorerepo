@@ -1,0 +1,17 @@
+# ignora tudo que o EAS não precisa
+**/node_modules
+**/.git
+**/.gitignore
+**/.vscode
+**/.idea
+**/.turbo
+**/dist
+**/build
+**/.cache
+**/.gradle
+**/ios/Pods
+**/.DS_Store
+
+# artefatos grandes fora do app mobile
+../../infra/*
+../../scripts/*

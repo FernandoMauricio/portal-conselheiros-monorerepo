@@ -4,7 +4,10 @@
   "description": "Monorepo para o Portal dos Conselheiros do Senac",
   "private": true,
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --parallel",
+    "dev:mobile": "pnpm --filter ./apps/mobile dev",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "dev:api": "pnpm --filter ./apps/api dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "turbo run format",
@@ -34,5 +37,11 @@
     "pnpm": "^9.5.0",
     "turbo": "^2.0.4"
   },
-  "packageManager": "pnpm@9.5.0"
+  "packageManager": "pnpm@9.5.0",
+  "resolutions": {
+    "expo": "~53.0.22",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.79.6"
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "appRoot": "apps/mobile"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "env": {
+        "GRADLE_OPTS": "-Xmx3g"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
