@@ -4,8 +4,10 @@
   "description": "Monorepo para o Portal dos Conselheiros do Senac",
   "private": true,
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "dev:mobile": "pnpm --filter ./apps/mobile dev",
+    "dev": "turbo run dev --parallel --filter=!@senac/portal-mobile",
+    "dev:all": "turbo run dev --parallel",
+    "dev:mobile": "pnpm -C apps/mobile dev",
+    "dev:mobile:android": "pnpm -C apps/mobile dev -- --android",
     "dev:web": "pnpm --filter ./apps/web dev",
     "dev:api": "pnpm --filter ./apps/api dev",
     "build": "turbo run build",
